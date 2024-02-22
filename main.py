@@ -13,13 +13,24 @@ import json
 from local import MUSIC_DIR, get_latest_local_release
 from remote import get_latest_remote_release
 
-def get_it(verbose:bool=False):
+try:
+    with open('ignore.txt', 'r') as f:
+        ignore = set(f.read().splitlines())
+except:
+    ignore = set()
+
+def get_it(verbose:bool=False, filter_artist:str=''):
     level = logging.INFO if verbose else logging.WARNING
     logging.basicConfig(level=level)
     for genre in MUSIC_DIR.iterdir():
         if not genre.is_dir():
             continue
         for artist in genre.iterdir():
+            if filter_artist and artist.stem != filter_artist:
+                continue
+            if artist.stem in ignore:
+                logging.info(f"Ignoring {artist.stem}")
+                continue
             latest_name, latest_year = get_latest_local_release(artist)
             if latest_year > 0:
                 logging.info(f"Latest local release for {artist.stem}: {latest_year} {latest_name}")
@@ -36,3 +47,4 @@ def get_it(verbose:bool=False):
 
 if __name__ == '__main__':
     typer.run(get_it)
+
