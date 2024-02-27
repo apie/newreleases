@@ -11,15 +11,16 @@ import typer
 import logging
 import json
 from local import MUSIC_DIR, get_latest_local_release
-from remote import get_latest_remote_release
+from remote import cached_get_latest_remote_release
 
 try:
     with open('ignore.txt', 'r') as f:
         ignore = set(f.read().splitlines())
-except:
+except FileNotFoundError:
     ignore = set()
 
-def get_it(verbose:bool=False, filter_artist:str=''):
+
+def get_it(verbose: bool = False, filter_artist: str = ''):
     level = logging.INFO if verbose else logging.WARNING
     logging.basicConfig(level=level)
     for genre in MUSIC_DIR.iterdir():
@@ -35,7 +36,7 @@ def get_it(verbose:bool=False, filter_artist:str=''):
             if latest_year > 0:
                 logging.info(f"Latest local release for {artist.stem}: {latest_year} {latest_name}")
                 try:
-                    r_latest_name, r_latest_year = json.loads(get_latest_remote_release(artist.stem))
+                    r_latest_name, r_latest_year = json.loads(cached_get_latest_remote_release(artist.stem))
                 except IndexError:
                     logging.info('No latest release found online')
                 else:
@@ -45,6 +46,6 @@ def get_it(verbose:bool=False, filter_artist:str=''):
                         logging.info('You have the latest available release')
             logging.info('')
 
+
 if __name__ == '__main__':
     typer.run(get_it)
-
