@@ -1,7 +1,7 @@
 import json
 from file_cache import file_cache_decorator
-from remote_integration.lastfm import get_latest_remote_release
-from remote_integration.lastfm import get_remote_releases
+from remote_integration.musicbrainz import get_latest_remote_release
+from remote_integration.musicbrainz import get_remote_releases
 
 
 @file_cache_decorator(keep_days=365)

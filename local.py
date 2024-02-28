@@ -21,4 +21,7 @@ def get_local_releases(artist_path: Path) -> List[Tuple[str, int]]:
 
 
 def get_latest_local_release(artist_path: Path) -> Tuple[str, int]:
-    return sorted(get_local_releases(artist_path), key=lambda x: x[1])[-1]
+    try:
+        return sorted(get_local_releases(artist_path), key=lambda x: x[1])[-1]
+    except IndexError:
+        return ('', 0)

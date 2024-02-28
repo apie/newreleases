@@ -14,7 +14,14 @@ except FileNotFoundError:
 
 
 def hashi(tuple_list):
-    return map(lambda x: str(x[1]).lower() + '|' + str(x[0]).lower(), tuple_list)
+    # Ignore special chars since there could be reasons why we removed them from local folders
+    def clean(s):
+        return str(s).lower()\
+            .replace("’", '')\
+            .replace(",", "")\
+            .replace("?", "")\
+            .replace("!", "")
+    return map(lambda x: clean(x[1]) + '|' + clean(x[0]), tuple_list)
 
 
 def get_it(verbose: bool = False, filter_artist: str = ''):
@@ -29,6 +36,7 @@ def get_it(verbose: bool = False, filter_artist: str = ''):
             if artist.stem in ignore:
                 logging.info(f"Ignoring {artist.stem}")
                 continue
+            logging.info(f"Genre: {genre.stem} - Artist: {artist.stem}")
             local_releases = get_local_releases(artist)
             logging.info('--Local:')
             for name, year in sorted(local_releases, key=lambda x: x[1]):
@@ -39,15 +47,18 @@ def get_it(verbose: bool = False, filter_artist: str = ''):
             for name, year in sorted(remote_releases, key=lambda x: x[1]):
                 logging.info('%s %s', year, name)
             if len(remote_releases) == 0:
-                logging.warning('No remote releases found!')
+                logging.error('No remote releases found!')
+                if filter_artist:
+                    raise typer.Exit(code=1)
 
             if missing := set(hashi(remote_releases)).difference(set(hashi(local_releases))):
                 logging.warning('--Missing the following %d releases in our local collection:', len(missing))
                 for year_name in sorted(missing):
                     logging.warning('%s %s', *year_name.split('|'))
+                if filter_artist:
+                    raise typer.Exit(code=1)
             else:
                 logging.info('Your collection is complete!')
-
             logging.info('')
 
 

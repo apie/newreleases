@@ -32,19 +32,24 @@ def get_it(verbose: bool = False, filter_artist: str = ''):
             if artist.stem in ignore:
                 logging.info(f"Ignoring {artist.stem}")
                 continue
+            logging.info(f"Genre: {genre.stem} - Artist: {artist.stem}")
             latest_name, latest_year = get_latest_local_release(artist)
             if latest_year > 0:
                 logging.info(f"Latest local release for {artist.stem}: {latest_year} {latest_name}")
                 try:
                     r_latest_name, r_latest_year = json.loads(cached_get_latest_remote_release(artist.stem))
                 except IndexError:
-                    logging.info('No latest release found online')
+                    logging.error('No latest release found online')
+                    if filter_artist:
+                        raise typer.Exit(code=1)
                 else:
                     if r_latest_year > latest_year:
                         logging.warning(f'Found newer release for "{artist.stem}" online: {r_latest_year} {r_latest_name}')
+                        if filter_artist:
+                            raise typer.Exit(code=1)
                     else:
                         logging.info('You have the latest available release')
-            logging.info('')
+                    logging.info('')
 
 
 if __name__ == '__main__':
