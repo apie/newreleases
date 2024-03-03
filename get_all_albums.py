@@ -44,6 +44,7 @@ def get_it(verbose: bool = False, filter_artist: str = '', sort_on_album_count: 
     dirs = list(iter_dirs(verbose, filter_artist))
     for d in sorted(dirs, key=lambda x: len(x[2] if sort_on_album_count else x), reverse=True):
         genre, artist, local_releases = d
+        print()
         logging.warning(f"Genre: {genre.stem} - Artist: {artist.stem}")
         logging.info('--Local:')
         for name, year in sorted(local_releases, key=lambda x: x[1]):

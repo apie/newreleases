@@ -19,6 +19,9 @@ def get_local_releases(artist_path: Path) -> List[Tuple[str, int]]:
             # Locally we like to write 'st' for a self title album. Change it to the full artist name
             if name == 'st':
                 name = artist_path.stem
+            # Locally we would like to write multiple artists in the name and then a dash and the album name. So strip the extra artists:
+            if ' - ' in name:
+                name = name.split(' - ')[1]
             releases.append((name, int(year)))
     return releases
 
