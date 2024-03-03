@@ -31,7 +31,7 @@ def iter_dirs(verbose: bool = False, filter_artist: str = ''):
         if not genre.is_dir():
             continue
         for artist in genre.iterdir():
-            if filter_artist and artist.stem != filter_artist:
+            if filter_artist and artist.stem.lower() != filter_artist.lower():
                 continue
             if artist.stem in ignore:
                 logging.info(f"Ignoring {artist.stem}")
