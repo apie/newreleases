@@ -24,7 +24,7 @@ def hashi(tuple_list):
     return map(lambda x: clean(x[1]) + '|' + clean(x[0]), tuple_list)
 
 
-def get_it(verbose: bool = False, filter_artist: str = ''):
+def iter_dirs(verbose: bool = False, filter_artist: str = ''):
     level = logging.INFO if verbose else logging.WARNING
     logging.basicConfig(level=level)
     for genre in MUSIC_DIR.iterdir():
@@ -36,30 +36,37 @@ def get_it(verbose: bool = False, filter_artist: str = ''):
             if artist.stem in ignore:
                 logging.info(f"Ignoring {artist.stem}")
                 continue
-            logging.info(f"Genre: {genre.stem} - Artist: {artist.stem}")
             local_releases = get_local_releases(artist)
-            logging.info('--Local:')
-            for name, year in sorted(local_releases, key=lambda x: x[1]):
-                logging.info('%s %s', year, name)
-            logging.info('')
-            remote_releases = json.loads(cached_get_remote_releases(artist.stem))
-            logging.info('--Remote:')
-            for name, year in sorted(remote_releases, key=lambda x: x[1]):
-                logging.info('%s %s', year, name)
-            if len(remote_releases) == 0:
-                logging.error('No remote releases found!')
-                if filter_artist:
-                    raise typer.Exit(code=1)
+            yield genre, artist, local_releases
 
-            if missing := set(hashi(remote_releases)).difference(set(hashi(local_releases))):
-                logging.warning('--Missing the following %d releases in our local collection:', len(missing))
-                for year_name in sorted(missing):
-                    logging.warning('%s %s', *year_name.split('|'))
-                if filter_artist:
-                    raise typer.Exit(code=1)
-            else:
-                logging.info('Your collection is complete!')
-            logging.info('')
+
+def get_it(verbose: bool = False, filter_artist: str = '', sort_on_album_count: bool = False):
+    dirs = list(iter_dirs(verbose, filter_artist))
+    for d in sorted(dirs, key=lambda x: len(x[2] if sort_on_album_count else x), reverse=True):
+        genre, artist, local_releases = d
+        logging.warning(f"Genre: {genre.stem} - Artist: {artist.stem}")
+        logging.info('--Local:')
+        for name, year in sorted(local_releases, key=lambda x: x[1]):
+            logging.info('%s %s', year, name)
+        logging.info('')
+        remote_releases = json.loads(cached_get_remote_releases(artist.stem))
+        logging.info('--Remote:')
+        for name, year in sorted(remote_releases, key=lambda x: x[1]):
+            logging.info('%s %s', year, name)
+        if len(remote_releases) == 0:
+            logging.error('No remote releases found!')
+            if filter_artist:
+                raise typer.Exit(code=1)
+
+        if missing := set(hashi(remote_releases)).difference(set(hashi(local_releases))):
+            logging.warning('--Missing the following %d releases in our local collection:', len(missing))
+            for year_name in sorted(missing):
+                logging.warning('%s %s', *year_name.split('|'))
+            if filter_artist:
+                raise typer.Exit(code=1)
+        else:
+            logging.info('Your collection is complete!')
+        logging.info('')
 
 
 if __name__ == '__main__':

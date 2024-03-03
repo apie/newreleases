@@ -14,7 +14,10 @@ def get_artist_id(artist_name: str) -> str:
 
 
 def get_remote_releases(artist_name) -> list[tuple[str, int]]:
-    artist_id = get_artist_id(artist_name)
+    try:
+        artist_id = get_artist_id(artist_name)
+    except IndexError:
+        return []
     release_groups = musicbrainzngs.browse_release_groups(artist=artist_id, release_type='album')['release-group-list']
     cleaned_albums = []
     for release_group in release_groups:

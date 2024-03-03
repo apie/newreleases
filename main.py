@@ -39,7 +39,7 @@ def get_it(verbose: bool = False, filter_artist: str = ''):
                 try:
                     r_latest_name, r_latest_year = json.loads(cached_get_latest_remote_release(artist.stem))
                 except IndexError:
-                    logging.error('No latest release found online')
+                    logging.error(f'No latest release for "{artist.stem}" found online')
                     if filter_artist:
                         raise typer.Exit(code=1)
                 else:
