@@ -1,5 +1,5 @@
 import json
-from file_cache import file_cache_decorator
+from utils.file_cache import file_cache_decorator
 from remote_integration.musicbrainz import get_latest_remote_release
 from remote_integration.musicbrainz import get_remote_releases
 

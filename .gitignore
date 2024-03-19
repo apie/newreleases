@@ -6,3 +6,4 @@ settings.py
 todo.txt
 ignore.txt
 check_releases.txt
+config.py

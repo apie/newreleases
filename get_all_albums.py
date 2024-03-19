@@ -5,6 +5,7 @@ import logging
 import json
 from local import MUSIC_DIR, get_local_releases
 from remote import cached_get_remote_releases
+from utils.popular_artists import get_popular_artists
 
 try:
     with open('ignore.txt', 'r') as f:
@@ -40,9 +41,28 @@ def iter_dirs(verbose: bool = False, filter_artist: str = ''):
             yield genre, artist, local_releases
 
 
-def get_it(verbose: bool = False, filter_artist: str = '', sort_on_album_count: bool = False):
+def get_it(
+    verbose: bool = False,
+    filter_artist: str = '',
+    max_artists: int = 100_000,
+    sort_on_album_count: bool = False,
+    sort_on_last_fm_username: str = '',
+    last_fm_period: str = '',
+):
     dirs = list(iter_dirs(verbose, filter_artist))
-    for d in sorted(dirs, key=lambda x: len(x[2] if sort_on_album_count else x), reverse=True):
+    my_lastfm_artists = []
+    if last_fm_username := sort_on_last_fm_username:
+        my_lastfm_artists = get_popular_artists(last_fm_username, last_fm_period)
+        dirs = sorted(
+            (g_a_lr for g_a_lr in dirs if g_a_lr[1].stem in my_lastfm_artists),
+            key=lambda g_a_lr: my_lastfm_artists.index(g_a_lr[1].stem)
+        )
+    elif sort_on_album_count:
+        dirs.sort(key=lambda x: len(x[2]), reverse=True)
+    else:
+        dirs.sort()
+
+    for d in dirs[:max_artists]:
         genre, artist, local_releases = d
         print()
         logging.warning(f"Genre: {genre.stem} - Artist: {artist.stem}")
