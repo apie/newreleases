@@ -23,6 +23,9 @@ except FileNotFoundError:
 def get_it(verbose: bool = False, filter_artist: str = ''):
     level = logging.INFO if verbose else logging.WARNING
     logging.basicConfig(level=level)
+    logging.info('Verbose logging enabled')
+    if filter_artist:
+        logging.info('Filtering on artist: %s', filter_artist)
     for genre in MUSIC_DIR.iterdir():
         if not genre.is_dir():
             continue
