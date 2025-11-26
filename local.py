@@ -22,6 +22,8 @@ def get_local_releases(artist_path: Path) -> List[Tuple[str, int]]:
             # Locally we would like to write multiple artists in the name and then a dash and the album name. So strip the extra artists:
             if ' - ' in name:
                 name = name.split(' - ')[1]
+            # Remove (Remastered) suffix
+            name = name.removesuffix(' (Remastered)')
             releases.append((name, int(year)))
     return releases
 
