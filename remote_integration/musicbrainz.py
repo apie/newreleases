@@ -32,6 +32,8 @@ def get_remote_releases(artist_name) -> list[tuple[str, int]]:
                 release_year = int(release_group['first-release-date'][:4])
             except ValueError:
                 release_year = 0
+        except KeyError:
+            release_year = 0
 
         cleaned_albums.append((album_name, release_year))
     return cleaned_albums
