@@ -26,6 +26,7 @@ def get_it(verbose: bool = False, filter_artist: str = ''):
     logging.info('Verbose logging enabled')
     if filter_artist:
         logging.info('Filtering on artist: %s', filter_artist)
+        found_artist = False
     for genre in MUSIC_DIR.iterdir():
         if not genre.is_dir():
             continue
@@ -35,6 +36,8 @@ def get_it(verbose: bool = False, filter_artist: str = ''):
             if artist.stem in ignore:
                 logging.info(f"Ignoring {artist.stem}")
                 continue
+            if filter_artist:
+                found_artist = True
             logging.info(f"Genre: {genre.stem} - Artist: {artist.stem}")
             latest_name, latest_year = get_latest_local_release(artist)
             if latest_year > 0:
@@ -53,6 +56,9 @@ def get_it(verbose: bool = False, filter_artist: str = ''):
                     else:
                         logging.info('You have the latest available release')
                     logging.info('')
+    if filter_artist and not found_artist:
+        logging.error('Filtering on artist "%s", but did not find it!', filter_artist)
+        raise typer.Exit(code=1)
 
 
 if __name__ == '__main__':

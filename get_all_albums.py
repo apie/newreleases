@@ -50,6 +50,9 @@ def get_it(
     last_fm_period: str = '',
 ):
     dirs = list(iter_dirs(verbose, filter_artist))
+    if filter_artist and not dirs:
+        logging.error('Filtering on artist "%s", but did not find it!', filter_artist)
+        raise typer.Exit(code=1)
     my_lastfm_artists = []
     if last_fm_username := sort_on_last_fm_username:
         my_lastfm_artists = get_popular_artists(last_fm_username, last_fm_period)
@@ -64,8 +67,8 @@ def get_it(
 
     for d in dirs[:max_artists]:
         genre, artist, local_releases = d
-        print()
-        logging.warning(f"Genre: {genre.stem} - Artist: {artist.stem}")
+        logging.info('')
+        logging.info(f"Genre: {genre.stem} - Artist: {artist.stem}")
         logging.info('--Local:')
         for name, year in sorted(local_releases, key=lambda x: x[1]):
             logging.info('%s %s', year, name)
