@@ -2,4 +2,4 @@ typer
 requests
 lxml
 musicbrainzngs
-
+pip-tools
