@@ -44,7 +44,7 @@ typer==0.20.0
     # via -r requirements.in
 typing-extensions==4.15.0
     # via typer
-urllib3==2.6.2
+urllib3==2.6.3
     # via requests
 wheel==0.45.1
     # via pip-tools
