@@ -25,7 +25,9 @@ mdurl==0.1.2
 musicbrainzngs==0.7.1
     # via -r requirements.in
 packaging==25.0
-    # via build
+    # via
+    #   build
+    #   wheel
 pip-tools==7.5.2
     # via -r requirements.in
 pygments==2.19.2
@@ -46,7 +48,7 @@ typing-extensions==4.15.0
     # via typer
 urllib3==2.6.2
     # via requests
-wheel==0.45.1
+wheel==0.46.2
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
