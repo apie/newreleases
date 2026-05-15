@@ -16,7 +16,7 @@ click==8.3.1
     #   typer
 idna==3.11
     # via requests
-lxml==6.0.2
+lxml==6.1.0
     # via -r requirements.in
 markdown-it-py==4.0.0
     # via rich
